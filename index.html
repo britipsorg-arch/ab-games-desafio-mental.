@@ -21,6 +21,8 @@ input{background:#080d17;color:white;border:1px solid #41516b}
 button{cursor:pointer;font-weight:bold;border:0}
 .primary{background:#087cff;color:white}
 .secondary{background:#1a2942;color:white;border:1px solid #344e75}
+.level{background:#172238;color:white;border:1px solid #344e75;text-align:left}
+.level:disabled{opacity:.4;cursor:not-allowed}
 #message{min-height:25px;font-weight:bold}
 footer{text-align:center;color:#6f8cb5;font-size:12px;margin-top:25px}
 </style>
@@ -30,6 +32,17 @@ footer{text-align:center;color:#6f8cb5;font-size:12px;margin-top:25px}
 <div class="logo">🅰️🅱️ GAMES</div>
 <h1>DESAFIO MENTAL</h1>
 <p>Teste sua lógica. Resolva os enigmas. Desafie seus limites.</p>
+
+<section id="menu">
+<h2>Escolha seu nível</h2>
+<p>Conclua um nível para desbloquear o próximo!</p>
+<button class="level" id="easy">🟢 NÍVEL 1 — FÁCIL</button>
+<button class="level" id="medium" disabled>🔒 NÍVEL 2 — MÉDIO</button>
+<button class="level" id="hard" disabled>🔒 NÍVEL 3 — DIFÍCIL</button>
+</section>
+
+<section id="game" hidden>
+<h2 id="levelTitle"></h2>
 <div class="stats">
 <div class="stat">PONTOS<strong id="score">0</strong></div>
 <div class="stat">ENIGMA<strong id="number">1/20</strong></div>
@@ -40,11 +53,17 @@ footer{text-align:center;color:#6f8cb5;font-size:12px;margin-top:25px}
 <button class="secondary" id="hint">💡 USAR DICA (-20 PONTOS)</button>
 <p id="message" aria-live="polite"></p>
 <button class="primary" id="next" hidden>PRÓXIMO ENIGMA →</button>
-<button class="secondary" id="restart" hidden>JOGAR NOVAMENTE</button>
+<button class="primary" id="complete" hidden>CONCLUIR NÍVEL</button>
+<button class="secondary" id="back">VOLTAR AOS NÍVEIS</button>
+</section>
+
 <footer>AB GAMES • DESAFIE SEUS LIMITES</footer>
 </main>
 <script>
-const riddles=[
+const levels=[
+{
+name:"FÁCIL",
+riddles:[
 ["O que fica maior quanto mais você tira dele?",["buraco"],"Pense em algo que pode existir no chão."],
 ["Tenho dentes, mas não mordo. O que sou?",["pente"],"Você usa no cabelo."],
 ["O que tem mãos, mas não pode aplaudir?",["relógio","relogio"],"Pode estar na parede."],
@@ -65,45 +84,126 @@ const riddles=[
 ["O que enche uma sala sem ocupar espaço?",["luz"],"Pode vir de uma lâmpada."],
 ["O pai de Ana tem cinco filhas: Nana, Nene, Nini, Nono. Qual é a quinta?",["ana"],"Leia o início do enigma."],
 ["Quanto é 10 + 10 ÷ 2?",["15","quinze"],"Faça a divisão primeiro."]
+]},
+{
+name:"MÉDIO",
+riddles:[
+["Dois pais e dois filhos foram pescar. Cada um pescou um peixe, mas só levaram três peixes. Como?",["eram tres","eram três","3 pessoas","avô pai filho","avo pai filho"],"Uma pessoa pode ser pai e filho ao mesmo tempo."],
+["Tenho cidades sem casas, montanhas sem árvores e água sem peixes. O que sou?",["mapa"],"Represento lugares."],
+["Qual número falta: 3, 6, 12, 24...?",["48","quarenta e oito"],"Cada número segue a mesma operação."],
+["Um galo põe um ovo no telhado. Para que lado ele cai?",["galo nao poe ovo","galo não põe ovo"],"Pense no animal mencionado."],
+["Você tem 10 velas acesas e o vento apaga 2. Quantas velas sobram?",["10","dez"],"A pergunta é quantas sobram, não quantas continuam acesas."],
+["O que pertence a você, mas os outros usam mais que você?",["nome"],"As pessoas usam para chamar você."],
+["Uma pessoa olha uma foto e diz: não tenho irmãos, mas o pai dessa pessoa é filho do meu pai. Quem está na foto?",["meu filho","minha filha","seu filho","sua filha"],"A pessoa da foto é descendente de quem fala."],
+["Qual número vem a seguir: 1, 4, 9, 16, 25...?",["36","trinta e seis"],"Pense nos quadrados dos números inteiros."],
+["Você entra num quarto escuro com uma vela, um lampião e uma lareira. Só tem um fósforo. O que acende primeiro?",["fosforo","fósforo"],"Antes dos outros objetos, é preciso usar algo."],
+["Um relógio bate seis vezes em cinco segundos. Quanto tempo leva para bater doze vezes, no mesmo ritmo?",["11 segundos","onze segundos","11"],"Conte os intervalos entre as batidas, não as batidas."]
+]},
+{
+name:"DIFÍCIL",
+riddles:[
+["Tenho três algarismos. A dezena é cinco maior que a unidade, e a centena é oito menor que a dezena. Qual sou eu?",["194"],"A unidade é 4; a dezena é 9."],
+["Um número de dois algarismos tem soma 9. Ao inverter os algarismos, o número aumenta 27. Qual é o original?",["36","trinta e seis"],"A diferença entre os algarismos é 3."],
+["Há 5 máquinas que fazem 5 peças em 5 minutos. Quanto tempo 100 máquinas levam para fazer 100 peças?",["5 minutos","5"],"Cada máquina faz uma peça no mesmo intervalo."],
+["Qual é o menor número positivo divisível por 2, 3, 4, 5 e 6?",["60","sessenta"],"Procure o menor múltiplo comum."],
+["Uma família tem duas mães, duas filhas e uma avó. Qual é o menor número de pessoas possível?",["3","três"],"Uma pessoa pode ter mais de um desses papéis."],
+["Complete a sequência: 2, 3, 5, 8, 12, 17...?",["23","vinte e três"],"As diferenças aumentam uma unidade a cada passo."],
+["Um tijolo pesa 1 kg mais meio tijolo. Quanto pesa um tijolo inteiro?",["2 kg","2 quilos","dois quilos","2"],"Se metade do tijolo pesa x, o total é 2x."],
+["Você tem 8 bolas iguais, mas uma é mais pesada. Qual o mínimo de pesagens numa balança de dois pratos para garantir encontrá-la?",["2","duas"],"Divida as bolas em três grupos tão equilibrados quanto possível."],
+["Um número multiplicado por 4 e depois diminuído de 6 resulta em 22. Qual é o número?",["7","sete"],"Desfaça as operações na ordem inversa."],
+["Você tem dois pavios. Cada um leva exatamente uma hora para queimar, mas queima de forma irregular. Como medir 45 minutos?",["acender um pavio nas duas pontas e o outro em uma ponta","queimar um pavio nas duas pontas"],"Acender um pavio nas duas pontas faz ele terminar em meia hora."]
+]}
 ];
-let i=0,score=0,used=false,done=false;
+
+let level=0,i=0,score=0,used=false,done=false;
+let unlocked=Number(localStorage.getItem("abUnlocked")||1);
+unlocked=Math.max(1,Math.min(3,unlocked));
 const el=id=>document.getElementById(id);
 function norm(s){return s.toLocaleLowerCase("pt-BR").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[.,!?]/g,"").trim()}
+function showMenu(){
+el("menu").hidden=false;
+el("game").hidden=true;
+el("easy").disabled=false;
+el("medium").disabled=unlocked<2;
+el("hard").disabled=unlocked<3;
+el("medium").textContent=unlocked>=2?"🟡 NÍVEL 2 — MÉDIO":"🔒 NÍVEL 2 — MÉDIO";
+el("hard").textContent=unlocked>=3?"🔴 NÍVEL 3 — DIFÍCIL":"🔒 NÍVEL 3 — DIFÍCIL";
+}
+function startLevel(n){
+if(n+1>unlocked)return;
+level=n;i=0;score=0;
+el("menu").hidden=true;
+el("game").hidden=false;
+el("levelTitle").textContent="NÍVEL "+(level+1)+" — "+levels[level].name;
+render();
+}
 function render(){
-el("question").textContent=riddles[i][0];
-el("number").textContent=(i+1)+"/20";
+const r=levels[level].riddles[i];
+el("question").textContent=r[0];
+el("number").textContent=(i+1)+"/"+levels[level].riddles.length;
 el("score").textContent=score;
-el("answer").value="";el("answer").disabled=false;
-el("check").disabled=false;el("hint").disabled=false;
-el("message").textContent="";el("next").hidden=true;el("restart").hidden=true;
+el("answer").value="";
+el("answer").disabled=false;
+el("check").disabled=false;
+el("hint").disabled=false;
+el("message").textContent="";
+el("next").hidden=true;
+el("complete").hidden=true;
 used=false;done=false;
 }
 function finish(){
-done=true;el("answer").disabled=true;el("check").disabled=true;el("hint").disabled=true;
-if(i===19){el("message").textContent="🏆 DESAFIO CONCLUÍDO! Pontuação: "+score;el("restart").hidden=false}
-else el("next").hidden=false;
+done=true;
+el("answer").disabled=true;
+el("check").disabled=true;
+el("hint").disabled=true;
+if(i===levels[level].riddles.length-1){
+el("message").textContent="🏆 NÍVEL CONCLUÍDO! Pontuação: "+score;
+el("complete").hidden=false;
+}else{
+el("next").hidden=false;
+}
 }
 function check(){
 if(done)return;
 const a=norm(el("answer").value);
 if(!a){el("message").textContent="Digite uma resposta primeiro.";return}
-if(riddles[i][1].some(x=>norm(x)===a)){
-score+=100;el("message").textContent="✅ CORRETO! +100 pontos!";
-el("score").textContent=score;finish();
-}else{el("message").textContent="❌ Tente novamente!";el("answer").select()}
+if(levels[level].riddles[i][1].some(x=>norm(x)===a)){
+score+=100;
+el("message").textContent="✅ CORRETO! +100 pontos!";
+el("score").textContent=score;
+finish();
+}else{
+el("message").textContent="❌ Tente novamente!";
+el("answer").select();
+}
 }
 el("check").onclick=check;
 el("answer").addEventListener("keydown",e=>{if(e.key==="Enter")check()});
 el("hint").onclick=()=>{
 if(done||used)return;
-score=Math.max(0,score-20);used=true;
+score=Math.max(0,score-20);
+used=true;
 el("score").textContent=score;
-el("message").textContent="💡 DICA: "+riddles[i][2];
+el("message").textContent="💡 DICA: "+levels[level].riddles[i][2];
 el("hint").disabled=true;
 };
 el("next").onclick=()=>{i++;render()};
-el("restart").onclick=()=>{i=0;score=0;render()};
-render();
+el("complete").onclick=()=>{
+if(level<2){
+unlocked=Math.max(unlocked,level+2);
+localStorage.setItem("abUnlocked",String(unlocked));
+el("message").textContent="🔓 PRÓXIMO NÍVEL DESBLOQUEADO!";
+showMenu();
+}else{
+el("message").textContent="🏆 PARABÉNS! VOCÊ CONCLUIU TODOS OS NÍVEIS!";
+showMenu();
+}
+};
+el("back").onclick=showMenu;
+el("easy").onclick=()=>startLevel(0);
+el("medium").onclick=()=>startLevel(1);
+el("hard").onclick=()=>startLevel(2);
+showMenu();
 </script>
 </body>
 </html>
