@@ -1,0 +1,109 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AB GAMES — Desafio Mental</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:20px;background:#05070d;color:white;font-family:Arial,sans-serif;display:flex;justify-content:center;min-height:100vh}
+main{width:100%;max-width:600px;background:#0d1423;border:1px solid #078bff;border-radius:18px;padding:24px;box-shadow:0 0 25px #007bff30;margin:auto}
+.logo{font-size:26px;font-weight:900;color:#168cff}
+h1{font-size:26px}
+p{color:#bdcce1;line-height:1.5}
+.stats{display:flex;gap:12px;margin:20px 0}
+.stat{background:#172238;border-radius:10px;padding:12px;flex:1}
+.stat strong{display:block;font-size:24px;color:#38a0ff;margin-top:5px}
+#question{font-size:20px;line-height:1.5;margin:25px 0}
+input,button{width:100%;padding:14px;border-radius:9px;font-size:16px;margin-top:10px}
+input{background:#080d17;color:white;border:1px solid #41516b}
+button{cursor:pointer;font-weight:bold;border:0}
+.primary{background:#087cff;color:white}
+.secondary{background:#1a2942;color:white;border:1px solid #344e75}
+#message{min-height:25px;font-weight:bold}
+footer{text-align:center;color:#6f8cb5;font-size:12px;margin-top:25px}
+</style>
+</head>
+<body>
+<main>
+<div class="logo">🅰️🅱️ GAMES</div>
+<h1>DESAFIO MENTAL</h1>
+<p>Teste sua lógica. Resolva os enigmas. Desafie seus limites.</p>
+<div class="stats">
+<div class="stat">PONTOS<strong id="score">0</strong></div>
+<div class="stat">ENIGMA<strong id="number">1/20</strong></div>
+</div>
+<div id="question"></div>
+<input id="answer" placeholder="Digite sua resposta" autocomplete="off">
+<button class="primary" id="check">RESPONDER</button>
+<button class="secondary" id="hint">💡 USAR DICA (-20 PONTOS)</button>
+<p id="message" aria-live="polite"></p>
+<button class="primary" id="next" hidden>PRÓXIMO ENIGMA →</button>
+<button class="secondary" id="restart" hidden>JOGAR NOVAMENTE</button>
+<footer>AB GAMES • DESAFIE SEUS LIMITES</footer>
+</main>
+<script>
+const riddles=[
+["O que fica maior quanto mais você tira dele?",["buraco"],"Pense em algo que pode existir no chão."],
+["Tenho dentes, mas não mordo. O que sou?",["pente"],"Você usa no cabelo."],
+["O que tem mãos, mas não pode aplaudir?",["relógio","relogio"],"Pode estar na parede."],
+["O que sobe, mas nunca desce?",["idade"],"Aumenta ao longo da vida."],
+["Quanto mais seca, mais molhada fica. O que é?",["toalha"],"Você usa depois do banho."],
+["O que tem cidades e rios, mas não tem casas nem água?",["mapa"],"Ajuda a encontrar lugares."],
+["O que pode dar a volta ao mundo sem sair do lugar?",["selo"],"Vai colado numa carta."],
+["O que tem um olho, mas não pode ver?",["agulha"],"É usada para costurar."],
+["Qual o próximo número: 2, 4, 8, 16...?",["32","trinta e dois"],"Dobre o número anterior."],
+["O que sempre chega, mas nunca é hoje?",["amanhã","amanha"],"É o dia depois de hoje."],
+["O que tem muitas teclas, mas não abre portas?",["teclado","piano"],"Você usa para digitar."],
+["Se você ultrapassa quem está em segundo lugar, em que posição fica?",["segundo","segunda","2"],"Você ocupa a posição dessa pessoa."],
+["Quantos meses têm 28 dias?",["12","doze","todos"],"Todos têm pelo menos 28 dias."],
+["O que quebra quando alguém fala?",["silêncio","silencio"],"É o contrário de barulho."],
+["O que tem pescoço, mas não tem cabeça?",["garrafa"],"Pode conter água."],
+["Qual vem a seguir: 1, 1, 2, 3, 5, 8...?",["13","treze"],"Some os dois números anteriores."],
+["Você tem 3 maçãs e pega mais 2. Quantas pegou?",["2","duas"],"Leia exatamente o que a pergunta pede."],
+["O que enche uma sala sem ocupar espaço?",["luz"],"Pode vir de uma lâmpada."],
+["O pai de Ana tem cinco filhas: Nana, Nene, Nini, Nono. Qual é a quinta?",["ana"],"Leia o início do enigma."],
+["Quanto é 10 + 10 ÷ 2?",["15","quinze"],"Faça a divisão primeiro."]
+];
+let i=0,score=0,used=false,done=false;
+const el=id=>document.getElementById(id);
+function norm(s){return s.toLocaleLowerCase("pt-BR").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[.,!?]/g,"").trim()}
+function render(){
+el("question").textContent=riddles[i][0];
+el("number").textContent=(i+1)+"/20";
+el("score").textContent=score;
+el("answer").value="";el("answer").disabled=false;
+el("check").disabled=false;el("hint").disabled=false;
+el("message").textContent="";el("next").hidden=true;el("restart").hidden=true;
+used=false;done=false;
+}
+function finish(){
+done=true;el("answer").disabled=true;el("check").disabled=true;el("hint").disabled=true;
+if(i===19){el("message").textContent="🏆 DESAFIO CONCLUÍDO! Pontuação: "+score;el("restart").hidden=false}
+else el("next").hidden=false;
+}
+function check(){
+if(done)return;
+const a=norm(el("answer").value);
+if(!a){el("message").textContent="Digite uma resposta primeiro.";return}
+if(riddles[i][1].some(x=>norm(x)===a)){
+score+=100;el("message").textContent="✅ CORRETO! +100 pontos!";
+el("score").textContent=score;finish();
+}else{el("message").textContent="❌ Tente novamente!";el("answer").select()}
+}
+el("check").onclick=check;
+el("answer").addEventListener("keydown",e=>{if(e.key==="Enter")check()});
+el("hint").onclick=()=>{
+if(done||used)return;
+score=Math.max(0,score-20);used=true;
+el("score").textContent=score;
+el("message").textContent="💡 DICA: "+riddles[i][2];
+el("hint").disabled=true;
+};
+el("next").onclick=()=>{i++;render()};
+el("restart").onclick=()=>{i=0;score=0;render()};
+render();
+</script>
+</body>
+</html>
