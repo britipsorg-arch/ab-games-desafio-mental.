@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AB GAMES — O Último Sinal</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #05070b;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: grid;
+      place-items: center;
+      text-align: center;
+    }
+
+    main {
+      width: min(90%, 650px);
+      padding: 35px 20px;
+      border: 1px solid #123b59;
+      border-radius: 16px;
+      background: radial-gradient(ellipse at center, #102234, #05070b 75%);
+      box-shadow: 0 0 35px #0077ff22;
+    }
+
+    .logo {
+      color: #19a7ff;
+      font-size: 18px;
+      letter-spacing: 8px;
+      font-weight: bold;
+    }
+
+    h1 {
+      font-size: clamp(34px, 8vw, 58px);
+      letter-spacing: 3px;
+      margin: 24px 0 10px;
+      text-shadow: 0 0 20px #008cff88;
+    }
+
+    p { color: #b8c8d8; line-height: 1.7; }
+
+    button {
+      background: #0788ff;
+      color: white;
+      border: none;
+      padding: 15px 28px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 18px;
+    }
+
+    button:hover { background: #0065c9; }
+
+    #mensagem {
+      margin-top: 22px;
+      color: #38b6ff;
+      min-height: 28px;
+    }
+
+    footer {
+      margin-top: 35px;
+      color: #71869a;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="logo">AB GAMES</div>
+
+    <h1>O ÚLTIMO SINAL</h1>
+
+    <p>
+      O sinal desapareceu.<br>
+      A cidade ficou em silêncio.<br>
+      Você está pronto para descobrir o que aconteceu?
+    </p>
+
+    <button onclick="iniciar()">INICIAR JOGO</button>
+
+    <div id="mensagem" aria-live="polite"></div>
+
+    <footer>AB GAMES · DESAFIE SEUS LIMITES</footer>
+  </main>
+
+  <script>
+    function iniciar() {
+      document.getElementById("mensagem").textContent =
+        "SINAL PERDIDO... A aventura ainda está sendo preparada.";
+    }
+  </script>
+</body>
+</html>
